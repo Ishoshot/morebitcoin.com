@@ -26,7 +26,7 @@ Investment Date: {{ $investment->created_at }}<br/>
 </ul>
 @endcomponent
 
-<p class="text-muted"> Unconfirmed Investments that exceeds 1 hour will be Cancelled </p>
+<p class="text-muted"> Unconfirmed Investments that exceeds 2 hours will be Cancelled </p>
 
 Thanks,<br>
 {{ config('app.name') }}

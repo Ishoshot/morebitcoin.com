@@ -25,9 +25,8 @@ class UserInvestmentInprogress implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $user, Investment $investment)
+    public function __construct(Investment $investment)
     {
-        $this->user = $user;
         $this->investment = $investment;
     }
 
@@ -39,6 +38,6 @@ class UserInvestmentInprogress implements ShouldQueue
      */
     public function handle()
     {
-        Notification::send($this->user, new UserInvestmentInprogressNotification($this->user, $this->investment));
+        Notification::send($this->investment->user, new UserInvestmentInprogressNotification($this->investment));
     }
 }

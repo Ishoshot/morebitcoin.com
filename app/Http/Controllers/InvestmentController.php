@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\Admin\AdminInvestmentCompleted;
 use App\Jobs\Admin\AdminInvestmentInitiated;
 use App\Jobs\Admin\AdminInvestmentInprogress;
+use App\Jobs\User\UserInvestmentCompleted;
 use App\Jobs\User\UserInvestmentInitiated;
 use App\Jobs\User\UserInvestmentInprogress;
 use App\Models\Investment;
@@ -212,13 +214,13 @@ class InvestmentController extends Controller
                 $message = "Investment Updated! Your Investment has been Initiated. Awaiting Admin.";
             }
             if ($request->status === 'inprogress') {
-                dispatch(new UserInvestmentInprogress(Auth::user(), $investment));
-                dispatch(new AdminInvestmentInprogress(Auth::user(), $investment));
+                dispatch(new UserInvestmentInprogress($investment));
+                dispatch(new AdminInvestmentInprogress($investment));
                 $message = "Investment Updated! Your Investment is Ongoing.";
             }
             if ($request->status === 'completed') {
-                dispatch(new UserInvestmentInprogress(Auth::user(), $investment));
-                dispatch(new AdminInvestmentInprogress(Auth::user(), $investment));
+                dispatch(new UserInvestmentCompleted($investment));
+                dispatch(new AdminInvestmentCompleted($investment));
                 $message = "Investment Updated! Your Investment is Ongoing.";
             }
 

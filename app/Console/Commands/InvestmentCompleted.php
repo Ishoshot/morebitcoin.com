@@ -7,21 +7,21 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class InvestmentPayout extends Command
+class InvestmentCompleted extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'investment:payout';
+    protected $signature = 'investment:completed';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Checks the Database for Ongoing Investments, and Update the user's available_balance with the appropriate amount based on investment plan";
+    protected $description = 'Sets the status completed for all investments that are completed';
 
     /**
      * Create a new command instance.
@@ -40,10 +40,11 @@ class InvestmentPayout extends Command
      */
     public function handle()
     {
+        //Set the status completed for all investments whose investment_end_date is greater than the current date
         try {
             $investments = Investment::where([
                 ["status", "=", "inprogress"],
-                ["investment_end_date", ">=", date("Y-m-d H:i:s")]
+                ["investment_end_date", ">", date("Y-m-d H:i:s")]
             ])->get();
 
             if ($investments->count() == 0) {
@@ -56,31 +57,19 @@ class InvestmentPayout extends Command
             $bar->start();
 
             foreach ($investments as $investment) {
-                $amount = 0;
-                if ($investment->plan == 'Hydrogen') {
-                    $amount = 2.5;
-                } else if ($investment->plan == 'Helium') {
-                    $amount = 71.4;
-                } else if ($investment->plan == 'Lithium') {
-                    $amount = 714.28;
-                } else if ($investment->plan == 'Beryllium') {
-                    $amount = 2857.14;
-                } else {
-                    $amount = 7142;
-                }
-
-                $investment->user->profile->update([
-                    'available_balance' => $investment->user->profile->available_balance + $amount
+                $investment->update([
+                    'status' => 'completed'
                 ]);
-
                 $bar->advance();
             }
 
             $bar->finish();
 
-            $this->info('Investment Payout Finish');
+            return 0;
+
+            $this->info('Investment Completed Finish');
         } catch (Exception $e) {
-            Log::error("Investment Payout Command" . "===" .  $e->getMessage());
+            Log::error("Investment Completed Command" . "===" .  $e->getMessage());
         }
     }
 }

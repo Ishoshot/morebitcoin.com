@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('otp:clean')->daily();
         $schedule->command('investment:watch')->everyFifteenMinutes()->emailOutputTo('ishoshot@gmail.com');
+        $schedule->command('investment:completed')->everyThirtyMinutes()->emailOutputTo('ishoshot@gmail.com');
         $schedule->command('investment:payout')->dailyAt('00:00')->emailOutputTo('ishoshot@gmail.com');
     }
 

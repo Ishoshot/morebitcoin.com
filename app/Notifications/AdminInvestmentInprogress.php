@@ -22,9 +22,8 @@ class AdminInvestmentInprogress extends Notification
      *
      * @return void
      */
-    public function __construct(User $user, Investment $investment)
+    public function __construct(Investment $investment)
     {
-        $this->user = $user;
         $this->investment = $investment;
     }
 
@@ -49,7 +48,7 @@ class AdminInvestmentInprogress extends Notification
     {
         Log::info("Admin Investment Inprogess: Mail Sent to Admin");
 
-        $user = $this->user;
+        $user = $this->investment->user;
         $investment = $this->investment;
 
         $data = [];
@@ -74,12 +73,19 @@ class AdminInvestmentInprogress extends Notification
                 "second" => "$5,000 BTC - 7 days",
                 "third" => "$25,000 BTC - 35 days",
             ];
-        } else {
+        } else if ($investment->plan == "Beryllium") {
             $data = [
                 "duration" => "35 days",
                 "first" => "$2,857.14 BTC - Daily",
                 "second" => "$20,000 BTC - 7 days",
                 "third" => "$100,000 BTC - 35 days",
+            ];
+        } else {
+            $data = [
+                "duration" => "35 days",
+                "first" => "$7,142 BTC - Daily",
+                "second" => "$50,000 BTC - 7 days",
+                "third" => "$250,000 BTC - 35 days",
             ];
         }
         return (new MailMessage)

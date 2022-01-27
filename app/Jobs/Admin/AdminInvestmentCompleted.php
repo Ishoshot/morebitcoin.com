@@ -24,9 +24,8 @@ class AdminInvestmentCompleted implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(User $user, Investment $investment)
+    public function __construct(Investment $investment)
     {
-        $this->user = $user;
         $this->investment = $investment;
     }
 
@@ -39,7 +38,7 @@ class AdminInvestmentCompleted implements ShouldQueue
     {
         $admin =  User::where('role_id', 2)->first();
         if ($admin) {
-            Notification::send($admin, new AdminInvestmentCompletedNotification($this->user, $this->investment));
+            Notification::send($admin, new AdminInvestmentCompletedNotification($this->investment->user, $this->investment));
         }
     }
 }
