@@ -256,18 +256,21 @@ class InvestmentController extends Controller
             $amountUSD = Investment::where([
                 ['user_id', auth()->id()],
                 ['status', '!=', 'created'],
+                ['status', '!=', 'initiated'],
                 ['status', '!=', 'abandoned'],
             ])->latest()->first()->amountUSD;
             //get the sum of amountUSD of all investments of the auth user with status not initiated or abandoned
             $totalInvestmentUSD = Investment::where([
                 ['user_id', auth()->id()],
                 ['status', '!=', 'created'],
+                ['status', '!=', 'initiated'],
                 ['status', '!=', 'abandoned'],
             ])->sum('amountUSD');
             //get the count of all investments of the auth user with status not initiated or abandoned
             $totalInvestmentCount = Investment::where([
                 ['user_id', auth()->id()],
                 ['status', '!=', 'created'],
+                ['status', '!=', 'initiated'],
                 ['status', '!=', 'abandoned'],
             ])->count();
 

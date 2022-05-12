@@ -40,11 +40,11 @@ class InvestmentCompleted extends Command
      */
     public function handle()
     {
-        //Set the status completed for all investments whose investment_end_date is greater than the current date
+        //Set the status completed for all investments whose investment_end_date is less than the current date
         try {
             $investments = Investment::where([
                 ["status", "=", "inprogress"],
-                ["investment_end_date", ">", date("Y-m-d H:i:s")]
+                ["investment_end_date", "<", date("Y-m-d H:i:s")]
             ])->get();
 
             if ($investments->count() == 0) {

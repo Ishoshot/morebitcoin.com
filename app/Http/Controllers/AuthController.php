@@ -47,7 +47,8 @@ class AuthController extends Controller
                 'password' => bcrypt($request->password),
             ]);
 
-            $otp = Otp::generate($user->email, 6, 10080);
+            // $otp = Otp::generate($user->email, 6, 10080);
+            $otp = (new Otp)->generate($user->email, 6, 10080);
 
             $user->update(['verification_code' => $otp->token]);
 
@@ -112,7 +113,7 @@ class AuthController extends Controller
         try {
             $user = User::where('id', $request->id)->first();
 
-            $otp = Otp::validate($user->email, $request->otp);
+            $otp = (new Otp)->validate($user->email, $request->otp);
 
             if ($otp->status) {
                 $user->update(['is_verified' => true]);
