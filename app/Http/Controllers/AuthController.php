@@ -9,6 +9,7 @@ use App\Jobs\User\UserWelcomeAndVerifyJob;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\AdminNewUser;
+use App\Notifications\ResetOTP;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -140,5 +141,66 @@ class AuthController extends Controller
         } catch (Exception $e) {
             Log::error("Logout Error" . " === " .  $e->getMessage());
         }
+    }
+
+    /**
+     * Send Otp
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     *
+     */
+    public function sendOtp(Request $request)
+    {
+        //ensure email exists
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User with this email not found'], 404);
+        }
+
+        //generate otp
+        $otp = (new Otp)->generate($user->email, 6, 10080);
+
+        //send mail to the user
+        try {
+            $user->notify(new ResetOTP($otp->token));
+            return response()->json(['message' => 'Otp sent successfully'], 200);
+        } catch (\Throwable $th) {
+            //log
+            Log::error("Send Otp Error" . " === " .  $th->getMessage());
+            return response()->json(['message' => 'Otp could not be sent' + $th->getMessage()], 500);
+        }
+    }
+
+
+
+    /**
+     * Reset Password
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     *
+     */
+    public function resetPassword(Request $request)
+    {
+        //ensure email exists
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User with this email not found'], 404);
+        }
+
+        //validate Otp
+        $otp = (new Otp)->validate($user->email, $request->otp);
+
+        if (!$otp->status) {
+            return response()->json(['message' => 'Otp is not valid'], 401);
+        }
+
+        //update password
+        $user->update(['password' => bcrypt($request->password)]);
+
+        return response()->json(['message' => 'Password updated successfully'], 200);
     }
 }
